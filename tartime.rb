@@ -18,7 +18,6 @@ end
 module TarTime
   # Parses, validates and stores the source and destination paths
   class Options
-
     # Source directory, must exist and be readable.
     attr_accessor :source
     # Destination directory, can be created but must not be an existing file.
