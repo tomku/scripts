@@ -48,17 +48,17 @@ module RepoMan
     end
 
     def pull_git
-      system('git pull --ff-only')
+      system('git pull --ff-only', exception: true)
       modules = Pathname.getwd / 'gitmodules'
-      system('git submodule update --init') if modules.file?
+      system('git submodule update --init', exception: true) if modules.file?
     end
 
     def pull_hg
-      system('hg update')
+      system('hg update', exception: true)
     end
 
     def pull_fossil
-      system('fossil pull')
+      system('fossil pull', exception: true)
     end
 
     def detect_and_pull(dir)
@@ -73,13 +73,25 @@ module RepoMan
       end
     end
 
+    def print_errors(errs)
+      puts 'errors:'
+      errs.each do |broken|
+        puts "- \e[31m#{broken}\e[0m"
+      end
+    end
+
     # Parses +argv+ and updates all version control repositories
     # located directly below the given root directory.
     def initialize
       @opts = Options.new
+      errs = []
       child_dirs.each do |dir|
         detect_and_pull(dir)
+      rescue StandardError => _e
+        errs << dir
       end
+
+      print_errors(errs) unless errs.empty?
     end
   end
 end
