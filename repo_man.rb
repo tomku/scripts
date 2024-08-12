@@ -62,6 +62,7 @@ module RepoMan
 
     def pull_fossil
       system('fossil pull', exception: true)
+      system('fossil update', exception: true)
     end
 
     def detect_and_pull(dir)
