@@ -51,6 +51,9 @@ module RepoMan
       system('git pull --ff-only', exception: true)
       modules = Pathname.getwd / 'gitmodules'
       system('git submodule update --init', exception: true) if modules.file?
+      system('git remote prune origin', exception: true)
+      system('git remote set-head -a origin', exception: true)
+      system('git gc', exception: true)
     end
 
     def pull_hg
