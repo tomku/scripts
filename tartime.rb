@@ -130,12 +130,10 @@ module TarTime
   # that it will unpack to one directory containing the contents of +src+.
   def self.relative_tar(src, dest)
     base = src.parent
-    files = Find.find(src).map { |f| Pathname.new(f).relative_path_from(base) }
+    files = Find.find(src).map { |f| Pathname.new(f).relative_path_from(base).to_s }
     FileUtils.cd(base) do
-      Zlib::GzipWriter.open(dest) do |gzip|
-        Minitar.open(gzip, 'w') do |tar|
-          files.each { |f| Minitar.pack_file(f.to_s, tar) }
-        end
+      Zlib::GzipWriter.open(File.open(dest, 'wb')) do |gzip|
+        Minitar.pack(files, gzip, false)
       end
     end
   end
